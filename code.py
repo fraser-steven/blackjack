@@ -372,5 +372,48 @@ def bj_sim(n_hands=50_000, player_h='q', dealer_c='q', bet=10, hard_c=4):
     q=len(player_h)
     for i in range(n_hands):
         pnl+= hand_result(bet=bet, player_hand=p[:q], dealer_card=dealer_c, hard_code= hard_c)
-        print(curr_result)
+        #print(curr_result)
+        #print(dealer_show_card)
+        #print(player_game_hands)
     return pnl
+
+totals = []
+for i in game_hands:
+    total = hand_total(i)
+    totals.append(total)
+print(totals)
+
+model_df = pd.DataFrame()
+model_df['dealer_card'] = dealer_show_card
+model_df['player_initial_total'] = pd.Series(totals)
+model_df['outcome'] = pd.Series(curr_result)
+
+lost = []
+for i in model_df['outcome']:
+    if i == -1:
+        lost.append(1)
+    else:
+        lost.append(0)
+model_df['lost'] = lost
+
+
+data = 1 - (model_df.groupby(by='dealer_card').sum()['lost'] /\
+            model_df.groupby(by='dealer_card').count()['lost'])
+fig, ax = plt.subplots(figsize=(10,6))
+ax = sns.barplot(x=data.index, 
+                 y=data.values)
+ax.set_xlabel("Dealer's Show Card",fontsize=16)
+ax.set_ylabel("Probability of Tie or Win",fontsize=16)
+plt.tight_layout()
+plt.savefig(fname='dealer_card_probs', dpi=150)
+
+
+data = 1 - (model_df.groupby(by='player_initial_total').sum()['lost'] /\
+            model_df.groupby(by='player_initial_total').count()['lost'])
+fig, ax = plt.subplots(figsize=(10,6))
+ax = sns.barplot(x=data.index, 
+                 y=data.values)
+ax.set_xlabel("Players total from 2 Cards",fontsize=16)
+ax.set_ylabel("Probability of Tie or Win",fontsize=16)
+plt.tight_layout()
+plt.savefig(fname='player_total_probs', dpi=150)
