@@ -1,10 +1,13 @@
 import numpy as np 
 import random
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-def hand_total(hand, dealer_card):
+def hand_total(hand):
     
     total = sum(hand)
-    return total, dealer_card, hand[0], hand[1]
+    return total
     
 def ace(hand):
     
@@ -61,7 +64,7 @@ def BasicStrategy(hand, dealer_card):
         soft_total= player_total + 10*aces_count
         
     if soft_total == 21 and no_cards == 2:
-        return 'BlackJack!'
+        return 'BlackJack'
     
 
     
@@ -203,11 +206,16 @@ def BasicStrategy(hand, dealer_card):
     
     if player_total > 16:
         return 'stand'   
+   
 
+game_results = []
+curr_result = []
 
 def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
     
     deck = np.array([1,2,3,4,5,6,7,8,9,10,10,10,10])
+    
+    
     
     hard_stay = False
     
@@ -234,9 +242,12 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
             dealer_hand.append(random.choice(deck))
             if 1 in (dealer_hand):
                 if sum(dealer_hand)== 11:
+                    value = 0
+                    curr_result.append(value)
                     return 0
                 #blackjack payed 3/2
-            return bet * 1.5
+                value = 1
+            return value
 
         if type(hard_code) == str:
             if hard_code == 'hit':
@@ -248,7 +259,9 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
                     player_hand.append(random.choice(deck))
                     bet = bet * 2
                     if sum(player_hand) > 21:
-                        return 0 - bet
+                        value = -1
+                        curr_result.append(value)
+                        return value
                 else:
                     return 'cant double'
 
@@ -271,7 +284,9 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
 
                 player_hand.append(random.choice(deck))
                 if sum(player_hand)>21:
-                    return 0 - bet
+                    value = -1
+                    curr_result.append(value)
+                    return value
 
             if BasicStrategy(player_hand, dealer_card) == 'split':
                 result = hand_result(bet=bet, player_hand=[player_hand[0]], dealer_card=dealer_card, hard_code= 'Split')
@@ -288,7 +303,9 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
                 soft_score += 10
 
             if len(dealer_hand) == 2 and soft_score == 21:
-                return 0 - bet
+                value = -1
+                curr_result.append(value)
+                return value
 
             player_score = sum(player_hand)
 
@@ -296,16 +313,24 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
                 player_score += 10
 
             if soft_score > 21:
-                return bet 
+                value = 1
+                curr_result.append(value)
+                return value 
 
             if player_score > soft_score:
-                return bet
+                value = 1
+                curr_result.append(value)
+                return value
 
             if player_score == soft_score:
-                return 0
+                value = 0
+                curr_result.append(value)
+                return value
 
             if player_score < soft_score:
-                return 0 - bet
+                value = -1
+                curr_result.append(value)
+                return value
     
     if hard_stay == True:
         
@@ -316,7 +341,9 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
             soft_score += 10
             
         if len(dealer_score) == 2 and soft_score == 21:
-            return 0 - bet
+            value = -1
+            curr_result.append(value)
+            return value
         
         player_score = sum(player_hand)
         if player_score <= 11 and 1 in player_hand:
@@ -324,11 +351,26 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
             
         if soft_score >= 17:
             if soft_score > 21:
-                return bet 
+                value = 1
+                curr_result.append(value)
+                return value 
             
             if player_score == soft_score:
-                return 0
+                value = 0
+                curr_result.append(value)
+                return value
             
             if player_score < soft_score:
-                return 0 - bet
-            
+                value = -1
+                curr_result.append(value)
+                return value
+
+def bj_sim(n_hands=50_000, player_h='q', dealer_c='q', bet=10, hard_c=4):
+    pnl=0
+    res=[]
+    p=player_h
+    q=len(player_h)
+    for i in range(n_hands):
+        pnl+= hand_result(bet=bet, player_hand=p[:q], dealer_card=dealer_c, hard_code= hard_c)
+        print(curr_result)
+    return pnl
