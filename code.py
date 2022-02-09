@@ -210,29 +210,32 @@ def BasicStrategy(hand, dealer_card):
 
 game_results = []
 curr_result = []
+dealer_show_card = []
+player_game_hands = []
 
 def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
     
     deck = np.array([1,2,3,4,5,6,7,8,9,10,10,10,10])
     
-    
-    
     hard_stay = False
     
     if type(player_hand) == str:
         
-        player_hand = [random.choice(deck), random.choice(deck)]
+        hand = player_hand = [random.choice(deck), random.choice(deck)]
+        player_game_hands.append(hand)
         
     if player_hand == [1]:
         hard_stay == True
     
     while len(player_hand)<2:
         
-        player_hand.append(random.choice(deck))
+        hand = player_hand.append(random.choice(deck))
+        player_game_hands.append(hand)
         
     if type(dealer_card == str):
         
         dealer_card = random.choice(deck)
+        dealer_show_card.append(dealer_card)
     dealer_hand = [dealer_card]
     
     if hard_stay == False:
@@ -247,16 +250,18 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
                     return 0
                 #blackjack payed 3/2
                 value = 1
-            return value
+            return 1
 
         if type(hard_code) == str:
             if hard_code == 'hit':
-                player_hand.append(random.choice(deck))
+                hand = player_hand.append(random.choice(deck))
+                player_game_hands.append(hand)
                 return hand_result(bet, player_hand, dealer_card, hard_code)
 
             if hard_code == 'double':
                 if len(player_hand) == 2:
-                    player_hand.append(random.choice(deck))
+                    hand = player_hand.append(random.choice(deck))
+                    player_game_hands.append(hand)
                     bet = bet * 2
                     if sum(player_hand) > 21:
                         value = -1
@@ -364,6 +369,8 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
                 value = -1
                 curr_result.append(value)
                 return value
+
+
 
 def bj_sim(n_hands=50_000, player_h='q', dealer_c='q', bet=10, hard_c=4):
     pnl=0
