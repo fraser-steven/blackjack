@@ -306,6 +306,24 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
             soft_score = dealer_score
             if dealer_score <= 11 and 1 in dealer_hand:
                 soft_score += 10
+                
+            if 'A' in player_hand:
+                        ace_in_hand = 1
+                    else:
+                        ace_in_hand = 0
+                    if dealer_hand[0] == 'A':
+                        dealer_card = 11
+                    else:
+                        dealer_card = dealer_hand[0]
+                    
+                    while (model_decision(model, hand_total(player_hand), 
+                                          ace_in_hand, dealer_card) == 1) and (hand_total(player_score) != 21):
+                        player_hand.append(random.choice(deck))
+                        action = 1
+                        live_total.append(hand_total(player_hand))
+                        if hand_total(player_hand) > 21:
+                            curr_result = -1
+                            break
 
             if len(dealer_hand) == 2 and soft_score == 21:
                 value = -1
@@ -369,9 +387,7 @@ def hand_result(bet=5, player_hand = 'f', dealer_card = 's', hard_code = 2):
                 value = -1
                 curr_result.append(value)
                 return value
-
-
-
+            
 def bj_sim(n_hands=50_000, player_h='q', dealer_c='q', bet=10, hard_c=4):
     pnl=0
     res=[]
@@ -445,8 +461,8 @@ model.fit(train_X, train_Y, epochs=20, batch_size=256, verbose=1)
 pred_Y_train = model.predict(train_X)
 actuals = train_Y[:,-1]
 
-def model_decision(model, player_sum, has_ace, dealer_card_num):
-    input_array = np.array([player_sum, 0, has_ace, dealer_card_num]).reshape(1,-1)
+def model_decision(model, player_total, has_ace, dealer_card):
+    input_array = np.array([player_total, 0, has_ace, dealer_card]).reshape(1,-1)
     predict_correct = model.predict(input_array)
     if predict_correct >= 0.52:
         return 1
