@@ -444,3 +444,11 @@ model.fit(train_X, train_Y, epochs=20, batch_size=256, verbose=1)
 
 pred_Y_train = model.predict(train_X)
 actuals = train_Y[:,-1]
+
+def model_decision(model, player_sum, has_ace, dealer_card_num):
+    input_array = np.array([player_sum, 0, has_ace, dealer_card_num]).reshape(1,-1)
+    predict_correct = model.predict(input_array)
+    if predict_correct >= 0.52:
+        return 1
+    else:
+        return 0
