@@ -424,3 +424,23 @@ ax.set_xlabel("Players total from 2 Cards",fontsize=16)
 ax.set_ylabel("Probability of Tie or Win",fontsize=16)
 plt.tight_layout()
 plt.savefig(fname='player_total_probs', dpi=150)
+
+
+feature_list = [i for i in model_df.columns if i not in ['dealer_card', 'outcome', 'lost', 'correct_action']]
+print(feature_list)
+
+train_X = np.array(model_df[feature_list])
+train_Y = np.array(model_df['correct_action']).reshape(-1,1)
+
+# Set up a neural net with 5 layers
+model = Sequential()
+model.add(Dense(16))
+model.add(Dense(128))
+model.add(Dense(32))
+model.add(Dense(8))
+model.add(Dense(1, activation='sigmoid'))
+model.compile(loss='binary_crossentropy', optimizer='sgd')
+model.fit(train_X, train_Y, epochs=20, batch_size=256, verbose=1)
+
+pred_Y_train = model.predict(train_X)
+actuals = train_Y[:,-1]
