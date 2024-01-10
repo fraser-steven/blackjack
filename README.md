@@ -19,13 +19,13 @@ Here is an example of the the hard coded options
 
 # Gathering the testing data set 
 
- A BlackJack enviroment is established as to gather information from the already hard coded basic strategy to form a data set for the Nureal network to learn from. It is simulated over 100,000 hands and the hand total, dealer card and outcome of each hand is recored and put into septerate
+ A BlackJack enviroment is established as to gather information from the already hard coded basic strategy to form a data set for the Nureal network to learn from. It is simulated over 100,000 hands and the hand total, dealer card and outcome of each hand is recored and put into septerate datasets
  
  ![image](https://github.com/fraser-steven/blackjack/assets/92175405/d5e68795-b2e0-43eb-99fe-af290e965cb1)
 
 # Neural Network 
 
-The Nueral Network was then trained on the 100,000 hands that were previously played. 
+The Nueral Network was then trained on the 100,000 hands that were previously played in the simulated enviroment. 
 
 ![image](https://github.com/fraser-steven/blackjack/assets/92175405/5a7d00e7-08fe-45b8-9b11-786be91a1ca4)
 
